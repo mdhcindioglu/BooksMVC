@@ -21,6 +21,7 @@ namespace Books.MVC.Data
             builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
             builder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
             builder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
+
         }
     }
 }
