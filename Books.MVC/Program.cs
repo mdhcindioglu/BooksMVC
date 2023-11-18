@@ -18,7 +18,7 @@ internal class Program
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        builder.Services.AddIdentity<User, Role>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MainDbContext>();
+        builder.Services.AddIdentity<User, Role>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<MainDbContext>();
         builder.Services.AddControllersWithViews();
         builder.Services.AddMvc();
 

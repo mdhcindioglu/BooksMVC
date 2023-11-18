@@ -25,38 +25,23 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string Username { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            [Required]
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+            
             [Phone]
-            [Display(Name = "Phone number")]
+            [Required]
+            [Display(Name = "Phone Number")]
             public string PhoneNumber { get; set; }
         }
 
@@ -64,12 +49,14 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var fullName = user.FullName;
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                FullName = fullName,
+                PhoneNumber = phoneNumber,
             };
         }
 
@@ -99,11 +86,24 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            var fullName = user.FullName;
+            if (Input.FullName != fullName)
+            {
+                user.FullName = Input.FullName;
+                var setFullNameResult = await _userManager.UpdateAsync(user);
+                if (!setFullNameResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set fullname.";
+                    return RedirectToPage();
+                }
+            }
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                user.PhoneNumber = Input.PhoneNumber;
+                var phoneNumberResult = await _userManager.SetPhoneNumberAsync(user, user.PhoneNumber);
+                if (!phoneNumberResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();

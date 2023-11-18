@@ -50,6 +50,8 @@ namespace Books.MVC.Areas.Identity.Pages.Account
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
+            
+            public string Result { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -94,12 +96,12 @@ namespace Books.MVC.Areas.Identity.Pages.Account
                 }
                 else if (result.IsNotAllowed)
                 {
-                    ModelState.AddModelError(string.Empty, "User email is not active.");
+                    ModelState.AddModelError("Input.Result", "User email is not active.");
                     return Page();
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError("Input.Result", "Check your login info and try again.");
                     return Page();
                 }
             }
