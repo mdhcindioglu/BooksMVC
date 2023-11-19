@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Books";
+}
+
+<div class="card bg-light mb-3">
+    <div class="card-body d-flex">
+        <h2 class="text-primary mb-0">@ViewData["Title"]</h2>
+        @if (User.IsInRole(Roles.Admin))
+        {
+            <div class="ms-auto">
+                <button onclick="showModal('@Url.Action("AddOrEdit", "Books", null, Context.Request.Scheme)', 'Create new book')" class="btn btn-primary" title="Click to add new book">New Book</button>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="card bg-light mb-3">
+    <div class="card-body" style="overflow-x: auto;">
+        <table class="table table-striped w-100" id="tblBooks">
+            <thead>
+                <tr>
+                    <th width="30%">Title</th>
+                    <th width="30%">Auther</th>
+                    <th width="30%">Category</th>
+                    <th width="2%">Pages</th>
+                    <th width="3%">Publish Date</th>
+                    <th width="3%">Added Date</th>
+                    <th width="2%"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<partial name="_ModalPartial" />
+
+@section Styles {
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+}
+
+@section HeadScripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+}
+
+@section Scripts {
+    <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        var tbl;
+        $(document).ready(function () {
+            tbl = $('#tblBooks').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/Books/GetAll',
+                    type: 'POST'
+                },
+                columns: [
+                    {
+                        data: 'title',
+                        render: function (data, type, item) {
+                            if ('@User.IsInRole(Roles.Admin)' === 'True') {
+                                return '<button onclick="showModal(\'/Books/AddOrEdit/' + item.id + '\', \'Edit book\')" class="btn btn-link p-0" title="Click to update ' + item.title + '">' + item.title + '</button>';
+                            } else {
+                                return item.title;
+                            }
+                        }
+                    },
+                    {
+                        data: 'autherFullname',
+                        render: function (data, type, item) {
+                            return '<a class="btn btn-link p-0" href="/Authers/Books/' + item.autherId + '" title="Click to show auther\'s books">' + item.autherFullname + '</a>';
+                        }
+                    },
+                    {
+                        data: 'categoryName',
+                        render: function (data, type, item) {
+                            return '<a class="btn btn-link p-0" href="/Categories/Books/' + item.autherId + '" title="Click to show category\'s books">' + item.categoryName + '</a>';
+                        }
+                    },
+                    {
+                        data: 'pages'
+                    },
+                    {
+                        data: 'publishDate',
+                        render: function (data, type, item) {
+                            if (item.publishDate !== undefined) {
+                                var date = new Date(item.publishDate);
+                                return date.toLocaleDateString();
+                            }
+                        }
+                    },
+                    {
+                        data: 'addedDate',
+                        render: function (data, type, item) {
+                            if (item.addedDate !== undefined) {
+                                var date = new Date(item.addedDate);
+                                return date.toLocaleDateString();
+                            }
+                        }
+                    },
+                    {
+                        orderable: false,
+                        data: 'id',
+                        visible: '@User.IsInRole(Roles.Admin)' === 'True',
+                        render: function (data, type, item) {
+                            return '<form action="/Books/Delete/' + item.id + '" onsubmit="return jQueryAjaxDelete(this)" class="d-inline">' +
+                                '<button class="btn btn-link text-danger p-0" title="Click to delete book"><i class="fa-solid fa-trash"></i></button>' +
+                                '</form>';
+                        }
+                    }
+                ],
+                pagingType: 'full_numbers',
+                dom: '<"top"<"d-none d-md-block"l>f>rt<"bottom"ip><"clear">', //(l)ength (f)iltring (p)agination p(r)ocessing (t)able (i)nformation
+            });
+        });
+
+        function refresh() {
+            tbl.ajax.reload();
+        }
+    </script>
+}

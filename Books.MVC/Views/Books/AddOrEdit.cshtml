@@ -1,0 +1,65 @@
+﻿@model BookVM
+@{
+    Layout = null;
+    ViewData["Title"] = Model.Id == 0 ? "Add" : "Edit";
+}
+
+<form asp-action="AddOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryAjaxPost(this)">
+    <partial name="_StatusMessage" for="@ViewData["Error"]" />
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group mb-3">
+        <label asp-for="@Model.Title" class="form-label"></label>
+        <input asp-for="@Model.Title" class="form-control autofocus" autocomplete="title" aria-required="true" />
+        <span asp-validation-for="@Model.Title" class="text-danger small d-block"></span>
+    </div>
+    <div class="d-flex">
+        <div class="form-group w-50 mb-3 me-2">
+            <label asp-for="@Model.CategoryId" class="form-label"></label>
+            <select asp-for="@Model.CategoryId" class="form-select" aria-required="true">
+                @foreach (var category in Model.Categories!)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+            <span asp-validation-for="@Model.CategoryId" class="text-danger small d-block"></span>
+        </div>
+        <div class="form-group w-50 mb-3">
+            <label asp-for="@Model.AutherId" class="form-label"></label>
+            <select asp-for="@Model.AutherId" class="form-select" aria-required="true">
+                @foreach (var auther in Model.Authers!)
+                {
+                    <option value="@auther.Id">@auther.FullName</option>
+                }
+            </select>
+            <span asp-validation-for="@Model.AutherId" class="text-danger small d-block"></span>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="form-group w-50 mb-3 me-2">
+            <label asp-for="@Model.Pages" class="form-label"></label>
+            <input asp-for="@Model.Pages" type="number" class="form-control" aria-required="true" />
+            <span asp-validation-for="@Model.Pages" class="text-danger small d-block"></span>
+        </div>
+        <div class="form-group w-50 mb-3">
+            <label asp-for="@Model.PublishDate" class="form-label"></label>
+            <input asp-for="@Model.PublishDate" type="date" class="form-control" aria-required="true" />
+            <span asp-validation-for="@Model.PublishDate" class="text-danger small d-block"></span>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="form-group w-50 mb-3 me-2">
+            <label asp-for="@Model.Image" class="form-label"></label>
+            <input asp-for="@Model.Image" type="file" class="form-control" aria-required="true" />
+            <span asp-validation-for="@Model.Image" class="text-danger small d-block"></span>
+        </div>
+        <div class="form-group w-50 mb-3">
+            <label asp-for="@Model.PDF" class="form-label"></label>
+            <input asp-for="@Model.PDF" type="file" class="form-control" aria-required="true" />
+            <span asp-validation-for="@Model.PDF" class="text-danger small d-block"></span>
+        </div>
+    </div>
+    <div class="d-flex">
+        <button type="button" data-bs-dismiss="modal" aria-label="Close" class="w-25 btn btn-secondary me-3">Close</button>
+        <button id="login-submit" type="submit" class="w-75 btn btn-primary">@ViewData["Title"]</button>
+    </div>
+</form>

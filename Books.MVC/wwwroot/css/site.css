@@ -24,3 +24,12 @@ body {
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: unset;
 }
+
+th, td{
+    vertical-align: middle;
+}
+
+.nav-item .active {
+    font-weight: bold;
+    color: var(--bs-primary)!important;
+}

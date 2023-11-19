@@ -42,11 +42,11 @@ namespace Books.MVC.Areas.Identity.Pages.Account
         {
             [Required]
             [EmailAddress]
-            public string Email { get; set; }
+            public string Email { get; set; } 
 
             [Required]
             [DataType(DataType.Password)]
-            public string Password { get; set; }
+            public string Password { get; set; } 
 
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
@@ -67,7 +67,9 @@ namespace Books.MVC.Areas.Identity.Pages.Account
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
+            Input = new InputModel();
+            Input.Email = "admin@website.com";
+            Input.Password = "Password";
             ReturnUrl = returnUrl;
         }
 

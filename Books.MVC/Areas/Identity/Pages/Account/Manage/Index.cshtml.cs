@@ -38,7 +38,12 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
             [Required]
             [Display(Name = "Full Name")]
             public string FullName { get; set; }
-            
+
+            [EmailAddress]
+            [Required]
+            [Display(Name = "Email")]
+            public string EmailAddress { get; set; }
+
             [Phone]
             [Required]
             [Display(Name = "Phone Number")]
@@ -47,6 +52,7 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(User user)
         {
+            var email = await _userManager.GetEmailAsync(user);
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var fullName = user.FullName;
@@ -56,6 +62,7 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 FullName = fullName,
+                EmailAddress = email,
                 PhoneNumber = phoneNumber,
             };
         }
@@ -98,8 +105,20 @@ namespace Books.MVC.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            var email = await _userManager.GetEmailAsync(user);
+            if (Input.EmailAddress != email)
+            {
+                user.Email = Input.EmailAddress;
+                var emailResult = await _userManager.SetEmailAsync(user, user.Email);
+                if (!emailResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set email.";
+                    return RedirectToPage();
+                }
+            }
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            if (Input.PhoneNumber != email)
             {
                 user.PhoneNumber = Input.PhoneNumber;
                 var phoneNumberResult = await _userManager.SetPhoneNumberAsync(user, user.PhoneNumber);
